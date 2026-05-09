@@ -6,7 +6,7 @@
   <title>FlashCards Teknologi – Liquid Glass</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0a0a20">
-  <!-- Google Sans Light (300) -->
+  <!-- Google Sans Light (300) + display swap -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -47,12 +47,14 @@
       <button class="btn" id="prevBtn"><span class="btn-icon">◀</span> Sebelum</button>
       <button class="btn" id="flipBtn"><span class="btn-icon">🔄</span> Belek</button>
       <button class="btn" id="nextBtn">Seterusnya <span class="btn-icon">▶</span></button>
+      <!-- Butang debug ikon gagal -->
+      <button class="btn" id="debugBtn" title="Senarai ikon gagal"><span class="btn-icon">🐞</span> Debug</button>
     </div>
     <div class="swipe-hint">← Leret kiri/kanan atau ketik untuk belek →</div>
     <div class="progress" id="progressDots"></div>
   </div>
 
-  <!-- Fail logo diasingkan -->
+  <!-- Fail data ikon & logik aplikasi -->
   <script src="icons.js"></script>
   <script src="script.js"></script>
 </body>
