@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(err => {
       console.warn('SW gagal, guna blob', err);
       const swBlob = new Blob([`
-        const CACHE_NAME = 'flashcards-v4';
+        const CACHE_NAME = 'flashcards-v5';
         self.addEventListener('install', e => { self.skipWaiting(); });
         self.addEventListener('activate', e => { e.waitUntil(clients.claim()); });
         self.addEventListener('fetch', e => {
@@ -49,21 +49,59 @@ function buildIconUrl(id) {
   return `${BASE}/${folder}/${folder}-${variant}.svg`;
 }
 
-// Pra-muat ikon berikutnya secara latar belakang
+// === SISTEM PRA-MUAT & PENGESANAN IKON GAGAL ===
 const preloaded = new Set();
+const failedIcons = new Set();
+
 function preloadIcon(id) {
-  if (preloaded.has(id)) return;
+  if (preloaded.has(id) || failedIcons.has(id)) return;
   preloaded.add(id);
   const url = buildIconUrl(id);
-  const img = new Image();
-  img.src = url;
+  fetch(url)
+    .then(res => {
+      if (!res.ok) {
+        console.warn(`❌ Ikon gagal pra-muat: ${id} (${url}) - Status: ${res.status}`);
+        failedIcons.add(id);
+      } else {
+        // Jika berjaya, pastikan ia ada dalam cache imej sebenar
+        const img = new Image();
+        img.src = url;
+      }
+    })
+    .catch(err => {
+      console.error(`❌ Ralat pra-muat ikon ${id}:`, err.message);
+      failedIcons.add(id);
+    });
 }
 
 function preloadNeighbors(currentIdx) {
-  for (let i = currentIdx - 2; i <= currentIdx + 2; i++) {
+  for (let i = currentIdx - 3; i <= currentIdx + 3; i++) {
     if (i >= 0 && i < iconList.length) preloadIcon(iconList[i]);
   }
 }
+
+// Fungsi untuk mencetak semua ikon yang gagal ke konsol
+function printFailedIcons() {
+  if (failedIcons.size === 0) {
+    console.log('✅ Semua ikon pra-muat berjaya!');
+  } else {
+    console.warn(`❌ Senarai ${failedIcons.size} ikon yang gagal dimuatkan:`);
+    console.table(Array.from(failedIcons).map(id => ({
+      ID: id,
+      URL: buildIconUrl(id)
+    })));
+  }
+}
+
+// Cetak senarai gagal setiap kali halaman dimuatkan (selepas deck dibina)
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    // Tunggu beberapa ketika supaya pra-muat sempat berjalan
+    console.log('%c🐞 Log Debug Ikon FlashCards', 'font-weight: bold; font-size: 14px;');
+    console.log('%cGunakan printFailedIcons() di konsol bila-bila masa untuk semak semula.', 'font-style: italic;');
+    printFailedIcons();
+  }, 2000);
+});
 
 // === APPLICATION STATE ===
 const STORAGE_KEY = 'flashcards_notes';
@@ -89,6 +127,8 @@ function buildDeck() {
     founder: notes[id]?.founder || '',
     app: notes[id]?.app || ''
   }));
+  // Mula pra-muat setelah deck dibina
+  preloadNeighbors(0);
 }
 
 // UI Elements
@@ -110,26 +150,48 @@ let currentLoadedUrl = '';
 
 function setIconSrc(url) {
   if (url === currentLoadedUrl) return;
+  // Reset paparan ikon kepada mod loading
   iconImg.style.opacity = '0';
   iconContainer.classList.add('loading');
   iconImg.src = url;
   currentLoadedUrl = url;
 }
 
+// Event Listener untuk ikon berjaya dimuatkan
 iconImg.addEventListener('load', () => {
   iconImg.style.opacity = '1';
   iconContainer.classList.remove('loading');
 });
+
+// Event Listener untuk ikon GAGAL dimuatkan (debug automatik)
 iconImg.addEventListener('error', () => {
+  const card = cards[currentIndex];
+  if (card && !failedIcons.has(card.id)) {
+    console.error(`❌ Ikon gagal dipapar: ${card.id} (${card.iconUrl})`);
+    failedIcons.add(card.id);
+    // Cetak semula senarai gagal yang dikemas kini
+    printFailedIcons();
+  }
+  // Guna ikon sandaran generik
   iconImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"%3E%3Crect x="3" y="3" width="18" height="18" rx="4"%3E%3C/rect%3E%3Ccircle cx="12" cy="12" r="4"%3E%3C/circle%3E%3C/svg%3E';
   iconImg.style.opacity = '1';
   iconContainer.classList.remove('loading');
+  // Elakkan gelung tak terhingga jika sandaran pun gagal
+  iconImg.onerror = null;
 });
 
 function renderCard() {
   const card = cards[currentIndex];
   if (!card) return;
-  setIconSrc(card.iconUrl);
+  // Jika ikon ini diketahui gagal, jangan cuba muatkan lagi, terus guna ikon sandaran
+  if (failedIcons.has(card.id)) {
+    iconImg.src = 'data:image/svg+xml,...'; // ikon sandaran
+    iconImg.style.opacity = '1';
+    iconContainer.classList.remove('loading');
+    currentLoadedUrl = null; // reset supaya ia boleh cuba lagi jika perlu
+  } else {
+    setIconSrc(card.iconUrl);
+  }
   iconIdDisplay.textContent = card.id;
   backTitle.textContent = card.name || 'Teknologi ' + card.id;
   nameInput.value = card.name;
@@ -219,4 +281,3 @@ cardEl.addEventListener('click', (e) => {
 // Init
 buildDeck();
 renderCard();
-preloadNeighbors(0);
