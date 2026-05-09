@@ -63,7 +63,6 @@ function preloadIcon(id) {
         console.warn(`❌ Ikon gagal pra-muat: ${id} (${url}) - Status: ${res.status}`);
         failedIcons.add(id);
       } else {
-        // Jika berjaya, pastikan ia ada dalam cache imej sebenar
         const img = new Image();
         img.src = url;
       }
@@ -83,7 +82,7 @@ function preloadNeighbors(currentIdx) {
 // Fungsi untuk mencetak semua ikon yang gagal ke konsol
 function printFailedIcons() {
   if (failedIcons.size === 0) {
-    console.log('✅ Semua ikon pra-muat berjaya!');
+    console.log('✅ Semua ikon berjaya dimuatkan!');
   } else {
     console.warn(`❌ Senarai ${failedIcons.size} ikon yang gagal dimuatkan:`);
     console.table(Array.from(failedIcons).map(id => ({
@@ -93,14 +92,19 @@ function printFailedIcons() {
   }
 }
 
-// Cetak senarai gagal setiap kali halaman dimuatkan (selepas deck dibina)
+// Tambah butang debug tambahan jika wujud di HTML
+const debugBtn = document.getElementById('debugBtn');
+if (debugBtn) {
+  debugBtn.addEventListener('click', printFailedIcons);
+}
+
+// Cetak senarai gagal setiap kali halaman dimuatkan
 window.addEventListener('load', () => {
   setTimeout(() => {
-    // Tunggu beberapa ketika supaya pra-muat sempat berjalan
     console.log('%c🐞 Log Debug Ikon FlashCards', 'font-weight: bold; font-size: 14px;');
     console.log('%cGunakan printFailedIcons() di konsol bila-bila masa untuk semak semula.', 'font-style: italic;');
     printFailedIcons();
-  }, 2000);
+  }, 2500);
 });
 
 // === APPLICATION STATE ===
@@ -127,7 +131,6 @@ function buildDeck() {
     founder: notes[id]?.founder || '',
     app: notes[id]?.app || ''
   }));
-  // Mula pra-muat setelah deck dibina
   preloadNeighbors(0);
 }
 
@@ -150,45 +153,38 @@ let currentLoadedUrl = '';
 
 function setIconSrc(url) {
   if (url === currentLoadedUrl) return;
-  // Reset paparan ikon kepada mod loading
   iconImg.style.opacity = '0';
   iconContainer.classList.add('loading');
   iconImg.src = url;
   currentLoadedUrl = url;
 }
 
-// Event Listener untuk ikon berjaya dimuatkan
 iconImg.addEventListener('load', () => {
   iconImg.style.opacity = '1';
   iconContainer.classList.remove('loading');
 });
 
-// Event Listener untuk ikon GAGAL dimuatkan (debug automatik)
 iconImg.addEventListener('error', () => {
   const card = cards[currentIndex];
   if (card && !failedIcons.has(card.id)) {
     console.error(`❌ Ikon gagal dipapar: ${card.id} (${card.iconUrl})`);
     failedIcons.add(card.id);
-    // Cetak semula senarai gagal yang dikemas kini
     printFailedIcons();
   }
-  // Guna ikon sandaran generik
   iconImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"%3E%3Crect x="3" y="3" width="18" height="18" rx="4"%3E%3C/rect%3E%3Ccircle cx="12" cy="12" r="4"%3E%3C/circle%3E%3C/svg%3E';
   iconImg.style.opacity = '1';
   iconContainer.classList.remove('loading');
-  // Elakkan gelung tak terhingga jika sandaran pun gagal
   iconImg.onerror = null;
 });
 
 function renderCard() {
   const card = cards[currentIndex];
   if (!card) return;
-  // Jika ikon ini diketahui gagal, jangan cuba muatkan lagi, terus guna ikon sandaran
   if (failedIcons.has(card.id)) {
-    iconImg.src = 'data:image/svg+xml,...'; // ikon sandaran
+    iconImg.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"%3E%3Crect x="3" y="3" width="18" height="18" rx="4"%3E%3C/rect%3E%3Ccircle cx="12" cy="12" r="4"%3E%3C/circle%3E%3C/svg%3E';
     iconImg.style.opacity = '1';
     iconContainer.classList.remove('loading');
-    currentLoadedUrl = null; // reset supaya ia boleh cuba lagi jika perlu
+    currentLoadedUrl = null;
   } else {
     setIconSrc(card.iconUrl);
   }
