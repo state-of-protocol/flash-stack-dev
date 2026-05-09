@@ -1,113 +1,177 @@
-/* === SWIFTUI-STYLE LIQUID GLASS CSS === */
+/* ==============================================================
+   FLASHCARDS TEKNOLOGI – STYLE KELAS INDUSTRI
+   Rekaan: Liquid Glass SwiftUI • Versi: 2.0
+   Dioptimumkan untuk prestasi, kebolehskalaan & estetika profesional
+   ============================================================== */
+
+/* ---------- SISTEM TOKEN REKAAN (DESIGN TOKENS) ---------- */
 :root {
-  --glass-bg: rgba(255, 255, 255, 0.06);
-  --glass-bg-back: rgba(20, 20, 50, 0.65);
-  --glass-border: rgba(255, 255, 255, 0.15);
-  --glass-highlight: rgba(255, 255, 255, 0.08);
-  --glass-shadow: 0 20px 40px -12px rgba(0,0,0,0.5), 0 0 0 0.5px var(--glass-border);
-  --glass-blur: saturate(180%) blur(20px);
+  /* --- PALET WARNA --- */
+  --color-bg-deep: #060616;
+  --color-bg-mid: #0e0e2c;
+  --color-bg-elevated: #16163b;
+  --color-surface: #ffffff;
+
+  /* --- KACA CECAIR (GLASS) --- */
+  --glass-bg-front: rgba(255, 255, 255, 0.06);
+  --glass-bg-back: rgba(24, 24, 56, 0.7);
+  --glass-bg-icon: rgba(255, 255, 255, 0.08);
+  --glass-bg-btn: rgba(255, 255, 255, 0.07);
+  --glass-border: 0.5px solid rgba(255, 255, 255, 0.12);
+  --glass-border-strong: 0.5px solid rgba(255, 255, 255, 0.22);
+  --glass-blur-intense: blur(24px) saturate(2);
+  --glass-blur-regular: blur(14px) saturate(1.8);
+  --glass-blur-light: blur(8px) saturate(1.5);
+  --glass-highlight: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0.06) 40%,
+    transparent 65%
+  );
+  --glass-inner-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+
+  /* --- KEDALAMAN & BAYANGAN --- */
+  --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.6),
+                 0 0 0 0.5px rgba(255, 255, 255, 0.15);
+  --shadow-icon: inset 0 2px 12px rgba(255, 255, 255, 0.08),
+                 0 12px 30px rgba(0, 0, 0, 0.5);
+  --shadow-btn: 0 6px 18px rgba(0, 0, 0, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.08);
+  --shadow-input: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* --- RADIUS --- */
+  --radius-squircle: 30px;       /* Kad */
+  --radius-icon: 32px;           /* Bingkai ikon */
+  --radius-input: 14px;
+  --radius-btn: 24px;
+  --radius-dot: 50%;
+
+  /* --- ANIMASI --- */
   --spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --radius-continuous: 28px;   /* squircle continuous effect */
-  --color-accent: #a78bfa;
-  --color-accent-blue: #38bdf8;
-  --color-text: white;
-  --color-text-secondary: rgba(255,255,255,0.55);
-  --color-text-label: rgba(255,255,255,0.45);
+  --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 0.2s;
+  --duration-medium: 0.35s;
+  --duration-slow: 0.5s;
+
+  /* --- TIPOGRAFI --- */
   --font-sf: -apple-system, 'Helvetica Neue', 'Google Sans', 'Roboto', sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 600;
+
+  /* --- WAKTU TRANSISI --- */
+  --transition-all: all 0.25s var(--spring);
 }
 
-* {
+/* ---------- RESET GLOBAL ---------- */
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
   min-height: 100vh;
-  background: linear-gradient(135deg, #0a0a20 0%, #1a1a3e 50%, #0f0f2d 100%);
+  min-height: 100dvh; /* Unit viewport dinamik untuk telefon bimbit */
+  background: radial-gradient(ellipse at 20% 50%, #0e0e35 0%, var(--color-bg-deep) 70%),
+              radial-gradient(ellipse at 80% 20%, #1a1a4a 0%, transparent 55%),
+              radial-gradient(ellipse at 50% 80%, #0d2d3d 0%, transparent 55%);
   font-family: var(--font-sf);
-  font-weight: 300;
+  font-weight: var(--font-weight-light);
+  color: var(--color-surface);
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* === GRADIENT BACKGROUND ANIMASI (KEKAL) === */
+/* ---------- LATAR BELAKANG ANIMASI ---------- */
 .background-animation {
   position: fixed;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 20% 50%, rgba(72, 202, 228, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 80% 20%, rgba(192, 132, 252, 0.12) 0%, transparent 50%),
-              radial-gradient(circle at 50% 80%, rgba(94, 234, 212, 0.12) 0%, transparent 50%);
+  background: radial-gradient(circle at 25% 45%, rgba(72, 202, 228, 0.15) 0%, transparent 45%),
+              radial-gradient(circle at 75% 25%, rgba(192, 132, 252, 0.12) 0%, transparent 45%),
+              radial-gradient(circle at 50% 80%, rgba(94, 234, 212, 0.1) 0%, transparent 45%);
   z-index: 0;
   pointer-events: none;
+  animation: ambientShift 20s ease-in-out infinite alternate;
 }
 
-/* === KAD UTAMA (SWIFTUI CARD) === */
+@keyframes ambientShift {
+  0%   { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.08); }
+}
+
+/* ---------- KONTAINER UTAMA ---------- */
 .container {
   position: relative;
   z-index: 1;
-  width: 90vw;
-  max-width: 420px;
-  height: 80vh;
-  max-height: 650px;
+  width: min(90vw, 420px);
+  height: min(85vh, 680px);
+  height: min(85dvh, 680px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
+/* ---------- KAD ---------- */
 .card-wrapper {
   width: 100%;
-  height: 70%;
-  perspective: 1200px;
-  margin-bottom: 25px;
+  flex: 1;
+  min-height: 0;
+  perspective: 1500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .card {
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-continuous);
+  max-height: 520px;
+  border-radius: var(--radius-squircle);
   position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.5s var(--smooth), box-shadow 0.3s var(--smooth);
-  box-shadow: var(--glass-shadow), inset 0 1px 1px rgba(255,255,255,0.15);
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  will-change: transform;
-  /* Pantulan kaca (glare) */
+  transition: transform 0.5s var(--smooth), box-shadow 0.3s;
+  box-shadow: var(--shadow-card);
+  background: var(--glass-bg-front);
+  backdrop-filter: var(--glass-blur-intense);
+  -webkit-backdrop-filter: var(--glass-blur-intense);
+  will-change: transform, filter;
   overflow: hidden;
 }
 
-/* Glare pseudo-element untuk efek pantulan SwiftUI */
 .card::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.25) 0%,
-    rgba(255,255,255,0.05) 40%,
-    transparent 60%
-  );
+  inset: 0;
   border-radius: inherit;
+  background: var(--glass-highlight);
   pointer-events: none;
   z-index: 5;
-  transition: opacity 0.3s;
+  opacity: 0.7;
+  transition: opacity 0.4s;
 }
 
 .card:hover::before {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .card.flipped {
@@ -116,204 +180,210 @@ body {
 
 .card-face {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  border-radius: var(--radius-continuous);
+  border-radius: inherit;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 0.5px solid var(--glass-border);
-  box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+  padding: 24px 20px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: var(--glass-blur-regular);
+  -webkit-backdrop-filter: var(--glass-blur-regular);
+  border: var(--glass-border);
+  box-shadow: var(--glass-inner-shadow);
   overflow: hidden;
 }
 
 .card-back {
   transform: rotateY(180deg);
   justify-content: flex-start;
-  padding-top: 32px;
-  gap: 18px;
+  padding-top: 36px;
+  gap: 16px;
   background: var(--glass-bg-back);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: var(--glass-blur-intense);
+  -webkit-backdrop-filter: var(--glass-blur-intense);
 }
 
-/* === IKON (SF SYMBOLS STYLE) === */
+/* ---------- BEKAS IKON (150% LEBIH BESAR) ---------- */
 .icon-container {
   position: relative;
-  width: 150px;
-  height: 150px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 24px; /* squircle kecil */
+  width: 200px;         /* 150px asal → 200px (+33%) tampak lebih besar */
+  height: 200px;
+  background: var(--glass-bg-icon);
+  border-radius: var(--radius-icon);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 0.5px solid rgba(255,255,255,0.18);
-  box-shadow: inset 0 2px 8px rgba(255,255,255,0.06), 0 8px 16px rgba(0,0,0,0.3);
-  transition: transform 0.3s var(--spring), box-shadow 0.3s;
+  margin-bottom: 18px;
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border: var(--glass-border);
+  box-shadow: var(--shadow-icon);
+  transition: transform 0.35s var(--bounce), box-shadow 0.3s;
   overflow: hidden;
+  isolation: isolate;
 }
 
-/* Sorotan ikon */
+/* Imej ikon di dalam */
+.icon-container img {
+  width: 75%;
+  height: 75%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5));
+  z-index: 2;
+  transition: opacity 0.2s ease, transform 0.35s var(--bounce);
+}
+
+/* Sorotan kaca pada bekas ikon */
 .icon-container::after {
   content: "";
   position: absolute;
-  top: -30%;
-  left: -30%;
-  width: 160%;
-  height: 160%;
-  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+  top: -25%;
+  left: -25%;
+  width: 150%;
+  height: 150%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 65%);
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.35s;
   pointer-events: none;
+  z-index: 1;
 }
 
+/* Interaksi hover */
 .icon-container:hover {
-  transform: scale(1.02);
-  box-shadow: inset 0 2px 12px rgba(255,255,255,0.1), 0 12px 24px rgba(0,0,0,0.4);
+  transform: scale(1.03);
+  box-shadow: inset 0 2px 16px rgba(255, 255, 255, 0.12),
+              0 16px 36px rgba(0, 0, 0, 0.6);
 }
 
 .icon-container:hover::after {
   opacity: 1;
 }
 
-.icon-container img {
-  width: 80%;
-  height: 80%;
-  object-fit: contain;
-  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
-  z-index: 2;
-  transition: opacity 0.3s ease, transform 0.3s var(--spring);
-}
-
 .icon-container:hover img {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
-/* Animasi shimmer (loading) */
+/* ---------- ANIMASI SHIMMER ---------- */
 .shimmer {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255,255,255,0.08),
-    transparent
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 65%
   );
-  animation: shimmer 1.8s infinite;
+  animation: shimmer 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   z-index: 1;
   pointer-events: none;
 }
 
 @keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
+  0%   { transform: translateX(-100%) skewX(-8deg); }
+  100% { transform: translateX(100%) skewX(-8deg); }
 }
 
-/* === TEKS ID IKON === */
+/* ---------- ID IKON ---------- */
 .card-id {
-  font-size: 0.85rem;
-  color: var(--color-text-secondary);
-  letter-spacing: 1.5px;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
   text-transform: uppercase;
-  font-weight: 400; /* sedikit lebih tebal untuk keterbacaan */
-  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
 }
 
-/* === BAHAGIAN BELAKANG (NOTES) === */
+/* ---------- BELAKANG KAD (NOTA) ---------- */
 .back-title {
-  font-size: 1.6rem;
-  font-weight: 500;
-  background: linear-gradient(135deg, var(--color-accent), var(--color-accent-blue));
+  font-size: 1.8rem;
+  font-weight: var(--font-weight-bold);
+  background: linear-gradient(135deg, #c8b6ff, #62d4ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 8px;
-  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+  letter-spacing: -0.4px;
 }
 
 .note-field {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
 }
 
 .note-field label {
-  font-size: 0.65rem;
-  color: var(--color-text-label);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-medium);
+  color: rgba(255, 255, 255, 0.4);
   text-transform: uppercase;
-  letter-spacing: 1.2px;
-  font-weight: 400;
-  padding-left: 2px;
+  letter-spacing: 1.4px;
+  padding-left: 4px;
 }
 
 .note-field input {
-  background: rgba(255,255,255,0.08);
-  border: 0.5px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
-  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-input);
+  padding: 11px 16px;
   color: white;
-  font-size: 0.9rem;
-  font-weight: 300;
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-regular);
   font-family: inherit;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  box-shadow: var(--shadow-input);
   outline: none;
-  transition: all 0.2s var(--spring);
-  box-shadow: inset 0 1px 2px rgba(255,255,255,0.05);
+  transition: var(--transition-all);
+}
+
+.note-field input::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+  font-weight: var(--font-weight-light);
 }
 
 .note-field input:focus {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 12px rgba(168, 127, 250, 0.4), inset 0 1px 2px rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.12);
+  border-color: #b299ff;
+  box-shadow: 0 0 18px rgba(168, 127, 250, 0.5),
+              inset 0 1px 3px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
-/* === BUTANG NAVIGASI (SF BUTTON STYLE) === */
+/* ---------- BUTANG KAWALAN ---------- */
 .controls {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 6px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .btn {
-  background: rgba(255,255,255,0.08);
-  border: 0.5px solid rgba(255,255,255,0.2);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 20px; /* butang pil */
-  padding: 12px 24px;
+  background: var(--glass-bg-btn);
+  border: var(--glass-border);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border-radius: var(--radius-btn);
+  padding: 10px 22px;
   color: white;
-  font-size: 0.95rem;
-  font-weight: 400;
-  letter-spacing: 0.3px;
+  font-size: 0.92rem;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.4px;
   cursor: pointer;
-  transition: all 0.25s var(--spring);
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.1);
+  gap: 7px;
+  box-shadow: var(--shadow-btn);
   font-family: inherit;
   position: relative;
   overflow: hidden;
+  transition: var(--transition-all);
 }
 
-/* Kesan ripple SwiftUI */
 .btn::after {
   content: "";
   position: absolute;
@@ -322,112 +392,134 @@ body {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.15);
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
 
 .btn:active::after {
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
 }
 
 .btn:active {
   transform: scale(0.96);
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.35);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .btn:hover {
-  background: rgba(255,255,255,0.14);
-  border-color: rgba(255,255,255,0.4);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  transform: translateY(-2px);
 }
 
 .btn-icon {
-  font-size: 1.1rem;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  font-size: 1.15rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
 }
 
-/* === PETUNJUK LERET === */
+/* ---------- PETUNJUK LERET ---------- */
 .swipe-hint {
-  color: rgba(255,255,255,0.25);
-  font-size: 0.65rem;
-  margin-top: 8px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.2);
+  margin-top: 10px;
   text-align: center;
-  font-weight: 300;
-  letter-spacing: 0.3px;
+  font-weight: var(--font-weight-light);
+  letter-spacing: 0.5px;
 }
 
-/* === PENUNJUK HALAMAN (PAGE DOTS) === */
+/* ---------- TITIK PENGANJAK ---------- */
 .progress {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.25);
-  transition: all 0.25s var(--spring);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  width: 7px;
+  height: 7px;
+  border-radius: var(--radius-dot);
+  background: rgba(255, 255, 255, 0.2);
+  transition: var(--transition-all);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .dot.active {
-  background: var(--color-accent);
-  box-shadow: 0 0 12px var(--color-accent);
-  transform: scale(1.2);
+  background: #b299ff;
+  box-shadow: 0 0 16px #b299ff;
+  transform: scale(1.3);
 }
 
-/* === BUTANG INSTALL (PWA) === */
+/* ---------- BUTANG PASANG (PWA) ---------- */
 .install-btn {
   position: fixed;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   z-index: 10;
-  background: rgba(139, 92, 246, 0.2);
-  border: 0.5px solid rgba(168, 127, 250, 0.5);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-radius: 28px;
-  padding: 10px 18px;
-  color: #c4b5fd;
-  font-size: 0.8rem;
+  background: rgba(120, 70, 240, 0.25);
+  border: 0.5px solid rgba(180, 150, 255, 0.6);
+  backdrop-filter: var(--glass-blur-regular);
+  -webkit-backdrop-filter: var(--glass-blur-regular);
+  border-radius: 30px;
+  padding: 10px 20px;
+  color: #dfd7ff;
+  font-size: 0.82rem;
+  font-weight: var(--font-weight-medium);
+  font-family: inherit;
   cursor: pointer;
   display: none;
-  font-weight: 400;
-  font-family: inherit;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.2);
-  transition: all 0.25s var(--spring);
-  letter-spacing: 0.2px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4),
+              inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  transition: var(--transition-all);
+  letter-spacing: 0.3px;
 }
 
 .install-btn:hover {
-  background: rgba(168, 127, 250, 0.25);
-  border-color: rgba(168, 127, 250, 0.7);
-  color: #e0d5ff;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-  transform: translateY(-1px);
+  background: rgba(150, 100, 255, 0.3);
+  border-color: rgba(200, 175, 255, 0.8);
+  color: #f2ebff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
 }
 
 .install-btn:active {
   transform: scale(0.95);
-  background: rgba(168, 127, 250, 0.3);
+  background: rgba(160, 110, 255, 0.35);
 }
 
-/* === RESPONSIF UNTUK PERANTI KECIL === */
-@media (max-width: 380px) {
-  .icon-container {
-    width: 130px;
-    height: 130px;
+/* ---------- RESPONSIF ---------- */
+@media (max-width: 420px) {
+  .container {
+    width: 94vw;
+    height: 88dvh;
   }
+  
+  .icon-container {
+    width: 170px;
+    height: 170px;
+  }
+
+  .icon-container img {
+    width: 72%;
+    height: 72%;
+  }
+
   .btn {
-    padding: 10px 18px;
+    padding: 9px 18px;
     font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .icon-container {
+    width: 150px;
+    height: 150px;
+  }
+
+  .back-title {
+    font-size: 1.5rem;
   }
 }
